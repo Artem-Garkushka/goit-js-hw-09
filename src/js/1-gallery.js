@@ -1,4 +1,7 @@
-const galleryItems = [
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+const images = [
   {
     preview: 'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820__480.jpg',
     original: 'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820_1280.jpg',
@@ -46,41 +49,33 @@ const galleryItems = [
   },
 ];
 
-const galleryContainer = document.querySelector('.gallery');
-const galleryMarkup = galleryItems.map(({ preview, original, description }) => {
-  return `
-    <li class="gallery__item">
-      <a class="gallery__link" href="${original}">
-        <img
-          class="gallery__image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </li>
-  `;
-}).join('');
+const gallery = document.querySelector('.gallery');
+const markup = images
+  .map(
+    image => `<li class="gallery-item">
+    <a class="gallery-link" href="${image.original}">
+        <img 
+            class="gallery-image" 
+            src="${image.preview}" 
+            alt="${image.description}"
+            />
+    </a>
+</li>`
+  )
+  .join('');
 
-galleryContainer.innerHTML = galleryMarkup;
+gallery.insertAdjacentHTML('beforeend', markup);
 
-galleryContainer.addEventListener('click', (event) => {
-  event.preventDefault();
-
-  const isGalleryImage = event.target.classList.contains('gallery__image');
-  
-  if (!isGalleryImage) {
-    return;
-  }
-  
-  const imageSrc = event.target.dataset.source;
-
-  const instance = basicLightbox.create(`
-    <img src="${imageSrc}" width="800" height="600">
-  `);
-
-  instance.show();
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+  fadeSpeed: 150,
 });
 
-  
-  
+lightbox.on('show.simplelightbox', () => {
+  const prevButton = document.querySelector('.sl-prev');
+  const nextButton = document.querySelector('.sl-next');
+
+  prevButton.innerHTML = '&larr;';
+  nextButton.innerHTML = '&rarr;';
+});
